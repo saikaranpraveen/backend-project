@@ -8,6 +8,10 @@ public class Category {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -16,11 +20,11 @@ public class Category {
         this.title = title;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Category() {
     }
 
-    public Category() {
+    public Category(String title) {
+        this.title = title;
     }
 
     public Category(Long id, String title) {

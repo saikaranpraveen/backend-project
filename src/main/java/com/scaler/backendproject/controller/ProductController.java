@@ -4,6 +4,9 @@ import com.scaler.backendproject.models.Product;
 import com.scaler.backendproject.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 @RestController
 public class ProductController {
 
@@ -14,22 +17,42 @@ public class ProductController {
     }
 
     //    @RequestMapping(value="/product", method = RequestMethod.POST)
-    @PostMapping("/product")
-    public void createProduct(Product product) {
-
+    @PostMapping("/products")
+    public Product createProduct(@RequestBody Product product) {
+        System.out.println("Create product");
+        Product productToReturn = productService.createProduct(product.getId(),
+                product.getTitle(), product.getDescription(),
+                product.getPrice(),product.getCategory().getTitle(),
+                product.getImageUrl());
+        productToReturn.toString();
+        return productToReturn;
     }
 
-    @GetMapping("/product/{id}")
+    @GetMapping("/products/{id}")
     public Product getProductById(@PathVariable("id") Long id) {
-        productService.getSingleProduct(id);
-        return null;
+        System.out.println("Get product");
+        Product product = productService.getSingleProduct(id);
+        return product;
     }
 
-    public void updateProduct(Product product) {
-
+    @GetMapping("/products")
+    public Product[] getAllProducts(){
+        Product[] products = productService.getAllProducts();
+        return products;
     }
 
-    public void deleteProduct(Product product) {
+    @PutMapping("products/{id}")
+    public String updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        productService.updateProduct(id,
+                product.getTitle(), product.getDescription(),
+                product.getPrice(),product.getCategory().getTitle(),
+                product.getImageUrl());
+        return "Product updated";
+    }
 
+    @DeleteMapping("products/{id}")
+    public String deleteProduct(@PathVariable Long id) {
+        String response = productService.deleteProduct(id);
+        return response;
     }
 }
