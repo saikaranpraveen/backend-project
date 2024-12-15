@@ -1,6 +1,7 @@
 package com.scaler.backendproject.service;
 
 import com.scaler.backendproject.dto.FakeStoreProductDto;
+import com.scaler.backendproject.exceptions.ProductNotFoundException;
 import com.scaler.backendproject.models.Category;
 import com.scaler.backendproject.models.Product;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,13 @@ public class FakeStoreProductService implements ProductService {
     }
 
     @Override
-    public Product getSingleProduct(Long id) {
+    public Product getSingleProduct(Long id) throws ProductNotFoundException {
         System.out.println("inside getSingleProduct");
         FakeStoreProductDto fakeStoreProductDto = restTemplate.getForObject("https://fakestoreapi.com/products/" + id,
                 FakeStoreProductDto.class);
+        if(fakeStoreProductDto == null) {
+            throw new ProductNotFoundException("Product not found with id "+id);
+        }
         return fakeStoreProductDto.getProduct();
     }
 
@@ -32,7 +36,7 @@ public class FakeStoreProductService implements ProductService {
         ResponseEntity<FakeStoreProductDto[]> response = restTemplate.getForEntity("https://fakestoreapi.com/products",
                 FakeStoreProductDto[].class);
         FakeStoreProductDto[] products = response.getBody();
-        System.out.println(response.getStatusCode());
+//        System.out.println(response.getStatusCode());
         Product[] array = new Product[products.length];
         for (int i = 0; i < products.length; i++) {
             array[i] = products[i].getProduct();

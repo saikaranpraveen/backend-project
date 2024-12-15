@@ -1,7 +1,11 @@
 package com.scaler.backendproject.controller;
 
+import com.scaler.backendproject.dto.ErrorDto;
+import com.scaler.backendproject.exceptions.ProductNotFoundException;
 import com.scaler.backendproject.models.Product;
 import com.scaler.backendproject.service.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
@@ -29,10 +33,11 @@ public class ProductController {
     }
 
     @GetMapping("/products/{id}")
-    public Product getProductById(@PathVariable("id") Long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable("id") Long id) throws ProductNotFoundException {
         System.out.println("Get product");
         Product product = productService.getSingleProduct(id);
-        return product;
+        ResponseEntity<Product> response = new ResponseEntity<>(product, HttpStatus.OK);
+        return response;
     }
 
     @GetMapping("/products")
@@ -53,6 +58,17 @@ public class ProductController {
     @DeleteMapping("products/{id}")
     public String deleteProduct(@PathVariable Long id) {
         String response = productService.deleteProduct(id);
+        return response;
+    }
+
+    @ExceptionHandler({ProductNotFoundException.class})
+    public ResponseEntity<ErrorDto> handleProductNotFoundException(Exception exception) {
+        ErrorDto errorDto = new ErrorDto();
+        errorDto.setMessage(exception.getMessage());
+
+        ResponseEntity<ErrorDto> response = new ResponseEntity<>(
+                errorDto,
+                HttpStatus.NOT_FOUND);
         return response;
     }
 }
