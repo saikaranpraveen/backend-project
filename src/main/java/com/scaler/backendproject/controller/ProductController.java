@@ -22,14 +22,15 @@ public class ProductController {
 
     //    @RequestMapping(value="/product", method = RequestMethod.POST)
     @PostMapping("/products")
-    public Product createProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
         System.out.println("Create product");
         Product productToReturn = productService.createProduct(product.getId(),
                 product.getTitle(), product.getDescription(),
                 product.getPrice(),product.getCategory().getTitle(),
                 product.getImageUrl());
         productToReturn.toString();
-        return productToReturn;
+        ResponseEntity<Product> response = new ResponseEntity<>(productToReturn, HttpStatus.CREATED);
+        return response;
     }
 
     @GetMapping("/products/{id}")
@@ -41,24 +42,27 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public Product[] getAllProducts(){
+    public ResponseEntity<Product[]> getAllProducts(){
         Product[] products = productService.getAllProducts();
-        return products;
+        ResponseEntity<Product[]> response = new ResponseEntity<>(products, HttpStatus.OK);
+        return response;
     }
 
     @PutMapping("products/{id}")
-    public String updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody Product product) {
         productService.updateProduct(id,
                 product.getTitle(), product.getDescription(),
                 product.getPrice(),product.getCategory().getTitle(),
                 product.getImageUrl());
-        return "Product updated";
+        ResponseEntity<String> response = new ResponseEntity<>("Product updated successfully", HttpStatus.ACCEPTED);
+        return response;
     }
 
     @DeleteMapping("products/{id}")
-    public String deleteProduct(@PathVariable Long id) {
-        String response = productService.deleteProduct(id);
-        return response;
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        ResponseEntity<String> responseToReturn = new ResponseEntity<>("Product deleted successfully", HttpStatus.ACCEPTED);
+        return responseToReturn;
     }
 
     @ExceptionHandler({ProductNotFoundException.class})

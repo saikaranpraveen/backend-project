@@ -74,8 +74,7 @@ public class FakeStoreProductService implements ProductService {
                 fakeStoreProductDto);
     }
 
-    public String deleteProduct(Long id) {
+    public void deleteProduct(Long id) {
         restTemplate.delete("https://fakestoreapi.com/products/"+ id);
-        return "Product deleted successfully";
     }
 }
