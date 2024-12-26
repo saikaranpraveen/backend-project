@@ -4,6 +4,7 @@ import com.scaler.backendproject.dto.ErrorDto;
 import com.scaler.backendproject.exceptions.ProductNotFoundException;
 import com.scaler.backendproject.models.Product;
 import com.scaler.backendproject.service.ProductService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,8 @@ public class ProductController {
 
     ProductService productService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(@Qualifier("selfProductService") ProductService productService) {
+
         this.productService = productService;
     }
 
@@ -28,7 +30,6 @@ public class ProductController {
                 product.getTitle(), product.getDescription(),
                 product.getPrice(),product.getCategory().getTitle(),
                 product.getImageUrl());
-        productToReturn.toString();
         ResponseEntity<Product> response = new ResponseEntity<>(productToReturn, HttpStatus.CREATED);
         return response;
     }
@@ -49,20 +50,28 @@ public class ProductController {
     }
 
     @PutMapping("products/{id}")
-    public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        productService.updateProduct(id,
-                product.getTitle(), product.getDescription(),
-                product.getPrice(),product.getCategory().getTitle(),
-                product.getImageUrl());
-        ResponseEntity<String> response = new ResponseEntity<>("Product updated successfully", HttpStatus.ACCEPTED);
-        return response;
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        try{
+            Product updatedProduct = productService.updateProduct(id,
+                    product.getTitle(), product.getDescription(),
+                    product.getPrice(),product.getCategory().getTitle(),
+                    product.getImageUrl());
+            ResponseEntity<Product> response = new ResponseEntity<>(updatedProduct, HttpStatus.ACCEPTED);
+            return response;
+        }catch(ProductNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        ResponseEntity<String> responseToReturn = new ResponseEntity<>("Product deleted successfully", HttpStatus.ACCEPTED);
-        return responseToReturn;
+        try{
+            productService.deleteProduct(id);
+            ResponseEntity<String> responseToReturn = new ResponseEntity<>("Product deleted successfully", HttpStatus.ACCEPTED);
+            return responseToReturn;
+        }catch(ProductNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @ExceptionHandler({ProductNotFoundException.class})

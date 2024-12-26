@@ -10,6 +10,6 @@ public interface ProductService {
     Product createProduct(Long id, String title, String description, Double price, String category, String image );
     Product getSingleProduct(Long id) throws ProductNotFoundException;
     Product[] getAllProducts();
-    void updateProduct(Long id, String title, String description, Double price, String category, String image );
-    void deleteProduct(Long id);
+    Product updateProduct(Long id, String title, String description, Double price, String category, String image ) throws ProductNotFoundException;
+    void deleteProduct(Long id) throws ProductNotFoundException;
 }

@@ -4,6 +4,8 @@ import com.scaler.backendproject.dto.FakeStoreProductDto;
 import com.scaler.backendproject.exceptions.ProductNotFoundException;
 import com.scaler.backendproject.models.Category;
 import com.scaler.backendproject.models.Product;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Service("fakestoreProductService")
 public class FakeStoreProductService implements ProductService {
 
     private RestTemplate restTemplate;
@@ -62,7 +64,7 @@ public class FakeStoreProductService implements ProductService {
         return response.getProduct();
     }
 
-    public void updateProduct(Long id, String title, String description, Double price, String category, String url) {
+    public Product updateProduct(Long id, String title, String description, Double price, String category, String url) {
         FakeStoreProductDto fakeStoreProductDto = new FakeStoreProductDto();
         fakeStoreProductDto.setId(id);
         fakeStoreProductDto.setTitle(title);
@@ -70,8 +72,14 @@ public class FakeStoreProductService implements ProductService {
         fakeStoreProductDto.setPrice(price);
         fakeStoreProductDto.setCategory(category);
         fakeStoreProductDto.setImage(url);
-        restTemplate.put("https://fakestoreapi.com/products/"+id,
-                fakeStoreProductDto);
+
+        ResponseEntity<FakeStoreProductDto> response = restTemplate.exchange("https://fakestoreapi.com/products/"+id,
+                HttpMethod.PUT,
+                new HttpEntity<>(fakeStoreProductDto),
+                FakeStoreProductDto.class);
+        System.out.println("product updated"+"response:"+response.getBody());
+        System.out.println(response.getStatusCode());
+        return new Product();
     }
 
     public void deleteProduct(Long id) {
