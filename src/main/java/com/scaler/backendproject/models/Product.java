@@ -1,6 +1,9 @@
 package com.scaler.backendproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -8,12 +11,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+
 public class Product extends BaseModel {
     private String title;
     private String description;
     private Double price;
     private String imageUrl;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+
     private Category category;
 
     public String getTitle() {
